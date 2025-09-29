@@ -27,7 +27,6 @@ class Ack(BaseModel):  # type: ignore[misc]
     @classmethod
     def parse(cls, data: bytes) -> Ack:
         """parse"""
-        print(data[0])
         return cls(
             can0=cls.get_can0_status(data=data[8]),
             can1=cls.get_can1_status(data=data[8]),
@@ -66,10 +65,7 @@ class Ack(BaseModel):  # type: ignore[misc]
     def get_can0_status(data: int) -> Status:
         """"""
         value = (0x20 & data) >> 5
-        if value == Status.off.value:
-            return Status.off
-        else:
-            return Status.on
+        return Status.map_obj(value)
 
     @staticmethod
     def get_can1_status(data: int) -> Status:
@@ -104,6 +100,10 @@ class DeviceInfoResponse(BaseModel):  # type: ignore[misc]
         """parse"""
         return cls(model=data[:12].decode(encoding="ascii"), version=data[12:16].decode(encoding="ascii"))
 
+    def __str__(self) -> str:
+        """__str__"""
+        return f"{self.__class__.__name__}(" f"model = {self.model}, " f"version = {self.version}" f")"
+
 
 class DeviceSerialResponse(BaseModel):  # type: ignore[misc]
     """DeviceSerialResponse"""
@@ -114,3 +114,7 @@ class DeviceSerialResponse(BaseModel):  # type: ignore[misc]
     def parse(cls, data: bytes) -> DeviceSerialResponse:
         """parse"""
         return cls(sn=data[:8].hex())
+
+    def __str__(self) -> str:
+        """__str__"""
+        return f"{self.__class__.__name__}(" f"sn = {self.sn}" f")"

@@ -4,15 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from ucan.models.base_model import (
-    ArbitrationBaudRate,
-    Channel,
-    CustomBaud,
-    DataFieldBaudRate,
-    FunctionCode,
-    Motion,
-    Status,
-)
+from ucan.models.base_model import Status
 
 
 class SystemControlResponse(BaseModel):  # type: ignore[misc]
@@ -35,4 +27,17 @@ class SystemControlResponse(BaseModel):  # type: ignore[misc]
             can1=Status.map_obj(data[3]),
             can2=Status.map_obj(data[4]),
             can3=Status.map_obj(data[5]),
+        )
+
+    def __str__(self) -> str:
+        """__str__"""
+        return (
+            f"{self.__class__.__name__}("
+            f"flash = {self.flash}, "
+            f"reset = {self.reset}, "
+            f"can0 = {self.can0}, "
+            f"can1 = {self.can1}, "
+            f"can2 = {self.can2}, "
+            f"can3 = {self.can3}"
+            f")"
         )

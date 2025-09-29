@@ -24,3 +24,14 @@ class CanSetupResponse(BaseModel):  # type: ignore[misc]
             arbitration_baud=ArbitrationBaudRate.map_obj(data[2]),
             data_field_baud=DataFieldBaudRate.map_obj(data[0]),
         )
+
+    def __str__(self) -> str:
+        """__str__"""
+        return (
+            f"{self.__class__.__name__}("
+            f"channel = {self.channel}, "
+            f"custom_baud = {self.custom_baud}, "
+            f"arbitration_baud = {self.arbitration_baud}, "
+            f"data_field_baud = {self.data_field_baud}"
+            f")"
+        )
