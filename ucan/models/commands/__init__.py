@@ -1,7 +1,8 @@
 """"""
 
-from ucan.models.base_model import ArbitrationBaudRate, Channel, DataFieldBaudRate, Status
+from ucan.models.base_model import ArbitrationBaudRate, Channel, DataFieldBaudRate, FilterFrame, FrameType, Status
 from ucan.models.commands.base_command import GetDeviceInfoCommand, GetDeviceSerialCommand
+from ucan.models.commands.can_filter_setup_command import CanFilterSetupCommand
 from ucan.models.commands.can_setup_command import CanCustomSetupCommand, CanSetupCommand
 from ucan.models.commands.system_control_command import SystemControlCommand
 
@@ -42,6 +43,14 @@ if __name__ == "__main__":
 
     print("-" * 100)
     cmd = SystemControlCommand(flash=Status.on, can0=Status.on)
+    print(cmd.build())
+    print(cmd.cmd())
+    print(cmd)
+
+    print("-" * 100)
+    cmd = CanFilterSetupCommand(
+        channel=Channel.C0, group=1, status=Status.on, frame_type=FilterFrame.standard, accept_id=0x0001, mask=0x07FF
+    )
     print(cmd.build())
     print(cmd.cmd())
     print(cmd)

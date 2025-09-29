@@ -15,7 +15,7 @@ class SystemControlCommand(BaseCommandModel):
     can1: Status = Status.off
     can2: Status = Status.off
     can3: Status = Status.off
-    data: str = bytes(12).hex()
+    data: str = bytes(10).hex()
 
     def build(self) -> str:
         """build"""

@@ -3,7 +3,7 @@
 from typing import Any
 
 from ...utils import assert_hex_str
-from ..base_model import ArbitrationBaudRate, Channel, CustomBaud, DataFieldBaudRate, FunctionCode, Motion
+from ..base_model import ArbitrationBaudRate, Channel, CustomBaud, DataFieldBaudRate, FunctionCode, Motion, Status
 from .base_command import BaseCommandModel
 
 
@@ -65,6 +65,7 @@ class CanCustomSetupCommand(BaseCommandModel):
     data_field_tseg1: int
     data_field_tseg2: int
     data_field_brp: int
+    filter_status: Status = Status.off
     data: str = bytes(2).hex()
 
     def model_post_init(self, context: Any, /) -> None:
@@ -96,6 +97,7 @@ class CanCustomSetupCommand(BaseCommandModel):
             f"{int.to_bytes(self.data_field_tseg1,byteorder='big', length=1).hex()}"
             f"{int.to_bytes(self.data_field_tseg2,byteorder='big', length=1).hex()}"
             f"{int.to_bytes(self.data_field_brp,byteorder='big', length=2).hex()}"
+            f"{int.to_bytes(self.filter_status.value,byteorder='big', length=1).hex()}"
             f"{bytes.fromhex(self.data).hex()}"
             f"{int.to_bytes(self.suffix,byteorder='big', length=2).hex()}"
         )
@@ -119,6 +121,7 @@ class CanCustomSetupCommand(BaseCommandModel):
             f"data_field_tseg1 = {self.data_field_tseg1}, "
             f"data_field_tseg2 = {self.data_field_tseg2}, "
             f"data_field_brp = {self.data_field_brp}, "
+            f"filter_status = {self.filter_status}, "
             f"data = {self.data}, "
             f"suffix = {self.suffix}"
             f")"

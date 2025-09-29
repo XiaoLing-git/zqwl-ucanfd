@@ -59,6 +59,7 @@ class FunctionCode(Enum):
     device_info = 0x40
     device_serial = 0x41
     can_config = 0x42
+    can_filter_config = 0x43
     system_control = 0x44
 
 
