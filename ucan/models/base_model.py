@@ -2,10 +2,12 @@
 
 from enum import Enum
 
-from pydantic import Ba
 
-READ = 0x52
-WRITE = 0x57
+class Motion(Enum):
+    """Motion"""
+
+    READ = 0x52
+    WRITE = 0x57
 
 
 class DeviceType(Enum):
@@ -60,6 +62,16 @@ class FilterFrame(Enum):
 
     standard = 0x00
     extended = 0x01
+
+
+class FrameType(Enum):
+    """
+    0x00 数据帧 用于传输实际的 CAN (FD) 数据，是设备间传递业务信息（如传感器数据、控制指令）的主要载体，需携带具体数据内容。
+    0x01 远程帧 用于请求目标节点发送指定 ID 的 CAN (FD) 数据，自身不携带实际数据，仅通过帧 ID 指定请求的数据标识。
+    """
+
+    data = 0x00
+    remote = 0x01
 
 
 class BusState(Enum):
