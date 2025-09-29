@@ -1,6 +1,10 @@
 """"""
 
+from __future__ import annotations
+
 from enum import Enum
+
+from ucan.errors import EnumItemNotExistError
 
 
 class Status(Enum):
@@ -61,6 +65,7 @@ class FunctionCode(Enum):
     can_config = 0x42
     can_filter_config = 0x43
     system_control = 0x44
+    ack_1 = 0xFF
 
 
 class Channel(Enum):
@@ -106,6 +111,15 @@ class BusState(Enum):
     warning = 0x01
     error = 0x02
     offline = 0x03
+
+    @classmethod
+    def map_obj(cls, data: int) -> BusState:
+        """map obj"""
+        data = data & 0x03
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
 
 
 class ArbitrationBaudRate(Enum):
