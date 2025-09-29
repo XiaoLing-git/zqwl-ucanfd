@@ -11,7 +11,7 @@ from ..base_model import FunctionCode, Motion
 class BaseCommandModel(BaseModel):  # type: ignore[misc]
     """Base Command Model"""
 
-    header: int = 0x4938
+    header: int = 0x493B
     function_code: FunctionCode
     motion: Motion
     data: str

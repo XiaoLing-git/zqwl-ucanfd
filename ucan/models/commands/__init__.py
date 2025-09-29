@@ -1,8 +1,9 @@
 """"""
 
-from ucan.models.base_model import ArbitrationBaudRate, Channel, DataFieldBaudRate
+from ucan.models.base_model import ArbitrationBaudRate, Channel, DataFieldBaudRate, Status
 from ucan.models.commands.base_command import GetDeviceInfoCommand, GetDeviceSerialCommand
 from ucan.models.commands.can_setup_command import CanCustomSetupCommand, CanSetupCommand
+from ucan.models.commands.system_control_command import SystemControlCommand
 
 if __name__ == "__main__":
     print(GetDeviceInfoCommand().build())
@@ -35,6 +36,12 @@ if __name__ == "__main__":
         data_field_brp=5,
     )
 
+    print(cmd.build())
+    print(cmd.cmd())
+    print(cmd)
+
+    print("-" * 100)
+    cmd = SystemControlCommand(flash=Status.on, can0=Status.on)
     print(cmd.build())
     print(cmd.cmd())
     print(cmd)

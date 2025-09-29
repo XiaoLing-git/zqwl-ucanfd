@@ -3,6 +3,13 @@
 from enum import Enum
 
 
+class Status(Enum):
+    """Status"""
+
+    off = 0x00
+    on = 0x01
+
+
 class Motion(Enum):
     """Motion"""
 
