@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import binascii
-
 from pydantic import BaseModel
 
 from ..base_model import BusState, FunctionCode, Status

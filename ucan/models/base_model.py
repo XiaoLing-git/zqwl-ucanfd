@@ -50,6 +50,15 @@ class CustomBaud(Enum):
     disable = 0x00
     enable = 0x01
 
+    @classmethod
+    def map_obj(cls, data: int) -> CustomBaud:
+        """map obj"""
+        data = data & 0x01
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
 
 class FunctionCode(Enum):
     """
@@ -75,6 +84,15 @@ class Channel(Enum):
     C1 = 0x01
     C2 = 0x02
     C3 = 0x03
+
+    @classmethod
+    def map_obj(cls, data: int) -> Channel:
+        """map obj"""
+        data = data & 0x03
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
 
 
 class FilterFrame(Enum):
@@ -143,6 +161,15 @@ class ArbitrationBaudRate(Enum):
     BAUD_10KBPS = 0x0D << 4
     BAUD_5KBPS = 0x0E << 4
 
+    @classmethod
+    def map_obj(cls, data: int) -> ArbitrationBaudRate:
+        """map obj"""
+        data = data & 0xF0
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
 
 class DataFieldBaudRate(Enum):
     """
@@ -160,3 +187,12 @@ class DataFieldBaudRate(Enum):
     BAUD_200KBPS = 0x08
     BAUD_125KBPS = 0x09
     BAUD_100KBPS = 0x0A
+
+    @classmethod
+    def map_obj(cls, data: int) -> DataFieldBaudRate:
+        """map obj"""
+        data = data & 0x0F
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
