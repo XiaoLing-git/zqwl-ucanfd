@@ -113,6 +113,29 @@ class FilterFrame(Enum):
     standard = 0x00
     extended = 0x01
 
+    @classmethod
+    def map_obj(cls, data: int) -> FilterFrame:
+        """map obj"""
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
+
+class DataSendType(Enum):
+    """ """
+
+    normal = 0x00
+    single = 0x01
+
+    @classmethod
+    def map_obj(cls, data: int) -> DataSendType:
+        """map obj"""
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
 
 class FrameType(Enum):
     """
@@ -122,6 +145,14 @@ class FrameType(Enum):
 
     data = 0x00
     remote = 0x01
+
+    @classmethod
+    def map_obj(cls, data: int) -> FrameType:
+        """map obj"""
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
 
 
 class BusState(Enum):
