@@ -13,6 +13,15 @@ class Status(Enum):
     off = 0x00
     on = 0x01
 
+    @classmethod
+    def map_obj(cls, data: int) -> Status:
+        """map obj"""
+        data = data & 0x01
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
 
 class Motion(Enum):
     """Motion"""
