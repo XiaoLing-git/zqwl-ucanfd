@@ -5,7 +5,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from ...utils import assert_hex_str
-from ..base_model import FunctionCode, Motion
+from ..base_model import Channel, FunctionCode, Motion
 
 
 class BaseCommandModel(BaseModel):  # type: ignore[misc]
@@ -62,3 +62,42 @@ class GetDeviceSerialCommand(BaseCommandModel):
     function_code: FunctionCode = FunctionCode.device_serial
     motion: Motion = Motion.READ
     data: str = bytes(16).hex()
+
+
+class GetCanConfigCommand(BaseCommandModel):
+    """Get Can Config Command"""
+
+    function_code: FunctionCode = FunctionCode.can_config
+    motion: Motion = Motion.READ
+    channel: Channel = Channel.C0
+    data: str = bytes(15).hex()
+
+    def build(self) -> str:
+        """build"""
+        return (
+            f"{int.to_bytes(self.header,byteorder='big', length=2).hex()}"
+            f"{int.to_bytes(self.function_code.value,byteorder='big', length=1).hex()}"
+            f"{int.to_bytes(self.motion.value,byteorder='big', length=1).hex()}"
+            f"{int.to_bytes(self.channel.value,byteorder='big', length=1).hex()}"
+            f"{bytes.fromhex(self.data).hex()}"
+            f"{int.to_bytes(self.suffix,byteorder='big', length=2).hex()}"
+        )
+
+    def __str__(self) -> str:
+        """__str__"""
+        return (
+            f"{self.__class__.__name__}("
+            f"header = {self.header}, "
+            f"function_code = {self.function_code}, "
+            f"motion = {self.motion}, "
+            f"channel = {self.channel}, "
+            f"data = {self.data}, "
+            f"suffix = {self.suffix}"
+            f")"
+        )
+
+
+class GetCanFilterConfigCommand(GetCanConfigCommand):
+    """Get Can Filter Config Command"""
+
+    function_code: FunctionCode = FunctionCode.can_filter_config
