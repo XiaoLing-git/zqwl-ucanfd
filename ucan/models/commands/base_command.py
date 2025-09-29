@@ -1,8 +1,11 @@
 """"""
 
+from typing import Any
+
 from pydantic import BaseModel
 
-from ucan.models.base_model import FunctionCode, Motion
+from ...utils import assert_hex_str
+from ..base_model import FunctionCode, Motion
 
 
 class BaseCommandModel(BaseModel):  # type: ignore[misc]
@@ -11,8 +14,12 @@ class BaseCommandModel(BaseModel):  # type: ignore[misc]
     header: int = 0x4938
     function_code: FunctionCode
     motion: Motion
-    data: bytes
+    data: str
     suffix: int = 0x452E
+
+    def model_post_init(self, context: Any, /) -> None:
+        """init"""
+        assert_hex_str(self.data)
 
     def build(self) -> str:
         """build"""
@@ -20,7 +27,7 @@ class BaseCommandModel(BaseModel):  # type: ignore[misc]
             f"{int.to_bytes(self.header,byteorder='big', length=2).hex()}"
             f"{int.to_bytes(self.function_code.value,byteorder='big', length=1).hex()}"
             f"{int.to_bytes(self.motion.value,byteorder='big', length=1).hex()}"
-            f"{self.data.hex()}"
+            f"{bytes.fromhex(self.data).hex()}"
             f"{int.to_bytes(self.suffix,byteorder='big', length=2).hex()}"
         )
 
@@ -31,7 +38,7 @@ class BaseCommandModel(BaseModel):  # type: ignore[misc]
     def __str__(self) -> str:
         """__str__"""
         return (
-            f"{self.__class__.__name__}("  # type: ignore[str-bytes-safe]
+            f"{self.__class__.__name__}("
             f"header = {self.header}, "
             f"function_code = {self.function_code}, "
             f"motion = {self.motion}, "
@@ -46,10 +53,12 @@ class GetDeviceInfoCommand(BaseCommandModel):
 
     function_code: FunctionCode = FunctionCode.device_info
     motion: Motion = Motion.READ
-    data: bytes = bytes(16)
+    data: str = bytes(16).hex()
 
 
-if __name__ == "__main__":
-    print(GetDeviceInfoCommand().build())
-    print(GetDeviceInfoCommand().cmd())
-    print(GetDeviceInfoCommand())
+class GetDeviceSerialCommand(BaseCommandModel):
+    """Get Device Serial Command"""
+
+    function_code: FunctionCode = FunctionCode.device_serial
+    motion: Motion = Motion.READ
+    data: str = bytes(16).hex()

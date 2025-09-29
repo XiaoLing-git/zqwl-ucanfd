@@ -30,6 +30,16 @@ class ProtocolType(Enum):
     CanFD = 0x01
 
 
+class CustomBaud(Enum):
+    """
+    0x00-常用波特率,
+    0x01-自定义
+    """
+
+    disable = 0x00
+    enable = 0x01
+
+
 class FunctionCode(Enum):
     """
     0x40	设备信息	读取设备型号、硬件版本等基础信息	仅读（0x52），不支持写
