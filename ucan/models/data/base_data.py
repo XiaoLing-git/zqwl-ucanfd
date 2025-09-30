@@ -15,12 +15,12 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     header: int = 0x5A
     channel: Channel
     dlc: int
-    send_type: DataSendType
+    # send_type: DataSendType
     filter_frame: FilterFrame
     frame_type: FrameType
     accelerate: Status = Status.on
     protocol_type: ProtocolType
-    can_id: str = ""
+    can_id: int
     data: str
     suffix: int = 0xA5
 
@@ -31,7 +31,7 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
             f"header = {self.header}, "
             f"channel = {self.channel}, "
             f"dlc = {self.dlc}, "
-            f"send_type = {self.send_type}, "
+            # f"send_type = {self.send_type}, "
             f"filter_frame = {self.filter_frame}, "
             f"frame_type = {self.frame_type}, "
             f"accelerate = {self.accelerate}, "
@@ -45,7 +45,6 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     def model_post_init(self, context: Any, /) -> None:
         """init"""
         assert_hex_str(self.data)
-        self.can_id = SerialNumber(self.filter_frame).hex
 
     def cmd(self) -> bytes:
         """cmd"""
@@ -70,13 +69,13 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
 
     def get_byte_2(self) -> int:
         """get_byte_2"""
-        send_type = self.send_type.value << 6
+        # send_type = self.send_type.value << 6
         channel = (self.channel.value & 0x06) << 3
         filter_frame = self.filter_frame.value << 2
         frame_type = self.frame_type.value << 1
-        return send_type | channel | filter_frame | frame_type | self.accelerate.value
+        return channel | filter_frame | frame_type | self.accelerate.value
 
     def get_byte_3_6(self) -> int:
         """get_byte_3 ~ 6"""
         protocol_type = self.protocol_type.value << 31
-        return protocol_type | int.from_bytes(bytes.fromhex(self.can_id), byteorder="big")
+        return protocol_type | self.can_id

@@ -49,6 +49,15 @@ class ProtocolType(Enum):
     Can = 0x00
     CanFD = 0x01
 
+    @classmethod
+    def map_obj(cls, data: int) -> ProtocolType:
+        """map obj"""
+        data = data & 0x01
+        for item in cls:
+            if item.value == data:
+                return item
+        raise EnumItemNotExistError(f"{cls.__name__} can't map {data:02X}")
+
 
 class CustomBaud(Enum):
     """

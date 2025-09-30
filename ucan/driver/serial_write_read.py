@@ -2,11 +2,13 @@
 
 import threading
 import time
+from typing import Any
 
 from ..models.base_model import FunctionCode
 from ..models.responses import Ack
 from ..models.responses.base_response import DeviceInfoResponse, DeviceSerialResponse
 from ..models.responses.can_setup_response import CanSetupResponse
+from ..models.responses.data_response import DataResponse
 from ..models.responses.system_control_response import SystemControlResponse
 from .serial_connection import SerialConnection
 
@@ -18,6 +20,9 @@ class SerialWriteRead(SerialConnection):
         """init"""
         super().__init__(port)
         self.__server_status: bool = False
+        self.ack: Any = None
+        self.response: Any = None
+        self.data: Any = None
 
     @property
     def server_status(self) -> bool:
@@ -56,7 +61,7 @@ class SerialWriteRead(SerialConnection):
                     continue
                 else:
                     response = buffer + response
-                    print("recv:", response)
+                    # print("recv:", response.hex())
                     pocket_flag = False
                     ack_flag = False
                     data_flag = False
@@ -68,9 +73,26 @@ class SerialWriteRead(SerialConnection):
                                 pocket_flag = True
                                 ack_flag = False
                                 data_flag = False
-                                print("res:", temp.hex(), len(response))
+                                # print("res:", temp.hex(), len(response))
+
+                                function_code = temp[2]
+                                if function_code == FunctionCode.device_info.value:
+                                    self.response = DeviceInfoResponse.parse(temp[4:])
+                                    # print(DeviceInfoResponse.parse(temp[4:]))
+                                if function_code == FunctionCode.device_serial.value:
+                                    self.response = DeviceSerialResponse.parse(temp[4:])
+                                    # print(DeviceSerialResponse.parse(temp[4:]))
+                                if function_code == FunctionCode.can_config.value:
+                                    self.response = CanSetupResponse.parse(temp[4:])
+                                    # print(CanSetupResponse.parse(temp[4:]))
+                                    # case FunctionCode.can_filter_config:
+                                    #     DeviceInfoResponse.parse(response[4:])
+                                if function_code == FunctionCode.system_control.value:
+                                    self.response = SystemControlResponse.parse(temp[4:])
+                                continue
                         else:
                             pocket_flag = True
+
                         if response.startswith(ack_header):
                             temp = response[:17]
                             if temp.endswith(data_suffix):
@@ -78,7 +100,9 @@ class SerialWriteRead(SerialConnection):
                                 pocket_flag = False
                                 ack_flag = True
                                 data_flag = False
-                                print("ack:", temp.hex(), len(response))
+                                self.ack = Ack.parse(temp[2:])
+                                # print(self.ack)
+                                continue
                         else:
                             ack_flag = True
                         if response.startswith(data_header):
@@ -90,7 +114,10 @@ class SerialWriteRead(SerialConnection):
                                 ack_flag = False
                                 data_flag = True
                                 response = response[8 + data_length :]
-                                print("data:", temp.hex(), len(response))
+                                self.data = DataResponse.parse(temp[1:])
+                                # print("recv:", temp.hex())
+                                # print(self.data)
+                                continue
                         else:
                             data_flag = True
                         if data_flag and pocket_flag and ack_flag:
