@@ -43,41 +43,42 @@ if __name__ == '__main__':
     #     res = ser.read_all().hex()
     #     print("res:",res)
     #
-    # device = SerialWriteRead("COM15")
-    # device.connect()
-    #
+    device = SerialWriteRead("COM15")
+    device.connect()
+
     # cmd = CanSetupCommand(
     #     channel=Channel.C0,
-    #     arbitration_baud=ArbitrationBaudRate.BAUD_250KBPS,
-    #     data_field_baud=DataFieldBaudRate.BAUD_500KBPS
+    #     arbitration_baud=ArbitrationBaudRate.BAUD_1000KBPS,
+    #     data_field_baud=DataFieldBaudRate.BAUD_1000KBPS
     # )
+    # print("cmd:",cmd)
+    # print("cmd_hex:", cmd.build())
     # device.write(cmd.cmd())
     # time.sleep(1)
     # cmd = SystemControlCommand(
     #     flash=Status.on,
     #     can0=Status.on
     # )
+    # print("cmd:", cmd)
+    # print("cmd_hex:", cmd.build())
     # device.write(cmd.cmd())
-    #
-    # time.sleep(5)
-    # device.disconnect()
+
+    time.sleep(10)
+
+    device.disconnect()
 
     # data = BaseDataModel(
     #     channel=Channel.C0,
     #     dlc=8,
     #     send_type=DataSendType.normal,
-    #     filter_frame=FilterFrame.standard,
+    #     filter_frame=FilterFrame.extended,
     #     frame_type=FrameType.data,
     #     accelerate=Status.on,
     #     protocol_type=ProtocolType.Can,
-    #     can_id=0x55,
     #     data="1112131415161718"
     # )
-    # print(data.build())
-    # print(data)
-
-    for i in range(0x556):
-        res = SerialNumber()
-        print(res.value, res.hex)
+    # for i in range(10):
+    #     time.sleep(0.05)
+    #     device.write(data.cmd())
 
 

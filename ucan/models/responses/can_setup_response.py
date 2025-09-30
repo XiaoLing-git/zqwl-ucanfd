@@ -22,7 +22,7 @@ class CanSetupResponse(BaseModel):  # type: ignore[misc]
             channel=Channel.map_obj(data[0]),
             custom_baud=CustomBaud.map_obj(data[1]),
             arbitration_baud=ArbitrationBaudRate.map_obj(data[2]),
-            data_field_baud=DataFieldBaudRate.map_obj(data[0]),
+            data_field_baud=DataFieldBaudRate.map_obj(data[2]),
         )
 
     def __str__(self) -> str:

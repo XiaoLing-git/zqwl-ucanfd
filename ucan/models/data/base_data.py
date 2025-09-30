@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from ucan.models.base_model import Channel, DataSendType, FilterFrame, FrameType, ProtocolType, Status
+from ucan.serial_number import SerialNumber
 from ucan.utils import assert_hex_str
 
 
@@ -19,7 +20,7 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     frame_type: FrameType
     accelerate: Status = Status.on
     protocol_type: ProtocolType
-    can_id: int
+    can_id: str = ""
     data: str
     suffix: int = 0xA5
 
@@ -44,6 +45,7 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     def model_post_init(self, context: Any, /) -> None:
         """init"""
         assert_hex_str(self.data)
+        self.can_id = SerialNumber(self.filter_frame).hex
 
     def cmd(self) -> bytes:
         """cmd"""
@@ -77,5 +79,4 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     def get_byte_3_6(self) -> int:
         """get_byte_3 ~ 6"""
         protocol_type = self.protocol_type.value << 31
-        print(self.can_id)
-        return protocol_type | self.can_id
+        return protocol_type | int.from_bytes(bytes.fromhex(self.can_id), byteorder="big")

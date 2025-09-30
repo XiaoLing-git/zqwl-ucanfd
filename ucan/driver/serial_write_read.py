@@ -43,29 +43,62 @@ class SerialWriteRead(SerialConnection):
     def __server(self) -> None:
         """__server"""
         pocket_header = bytes.fromhex("493b")
+        pocket_suffix = bytes.fromhex("452e")
         ack_header = bytes.fromhex("5aff")
+        data_header = bytes.fromhex("5a")
+        data_suffix = bytes.fromhex("a5")
         try:
             assert self.serial is not None
+            buffer = b""
             while self.server_status:
-                response = self.serial.read(32)
+                response = self.serial.read(1024)
                 if not response:
                     continue
                 else:
-                    if response.startswith(pocket_header):
-                        function_code = response[2]
-                        match function_code:
-                            case FunctionCode.device_info.value:
-                                print(DeviceInfoResponse.parse(response[4:]))
-                            case FunctionCode.device_serial.value:
-                                print(DeviceSerialResponse.parse(response[4:]))
-                            case FunctionCode.can_config.value:
-                                print(CanSetupResponse.parse(response[4:]))
-                            # case FunctionCode.can_filter_config:
-                            #     DeviceInfoResponse.parse(response[4:])
-                            case FunctionCode.system_control.value:
-                                print(SystemControlResponse.parse(response[4:]))
-                    if response.startswith(ack_header):
-                        print(Ack.parse(response[2:]))
+                    response = buffer + response
+                    print("recv:", response)
+                    pocket_flag = False
+                    ack_flag = False
+                    data_flag = False
+                    while True:
+                        if response.startswith(pocket_header):
+                            temp = response[:22]
+                            if temp.endswith(pocket_suffix):
+                                response = response[22:]
+                                pocket_flag = True
+                                ack_flag = False
+                                data_flag = False
+                                print("res:", temp.hex(), len(response))
+                        else:
+                            pocket_flag = True
+                        if response.startswith(ack_header):
+                            temp = response[:17]
+                            if temp.endswith(data_suffix):
+                                response = response[17:]
+                                pocket_flag = False
+                                ack_flag = True
+                                data_flag = False
+                                print("ack:", temp.hex(), len(response))
+                        else:
+                            ack_flag = True
+                        if response.startswith(data_header):
+                            data_length = response[1]
+                            data_length = 0x7F & data_length
+                            temp = response[: 8 + data_length]
+                            if temp.endswith(data_suffix):
+                                pocket_flag = False
+                                ack_flag = False
+                                data_flag = True
+                                response = response[8 + data_length :]
+                                print("data:", temp.hex(), len(response))
+                        else:
+                            data_flag = True
+                        if data_flag and pocket_flag and ack_flag:
+                            buffer = response
+                            break
+                        if not self.__server_status:
+                            break
+
             return
         except Exception as e:
             self.__server_status = False

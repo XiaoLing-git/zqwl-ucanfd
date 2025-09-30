@@ -32,7 +32,7 @@ class SerialNumber:
         if self.frame is FilterFrame.standard:
             return "0000" + int.to_bytes(self.serial_number, byteorder="little", length=2).hex()
         else:
-            return int.to_bytes(self.serial_number, byteorder="little", length=4).hex()
+            return int.to_bytes(self.serial_number, byteorder="big", length=4).hex()
 
     @property
     def value(self) -> int:
