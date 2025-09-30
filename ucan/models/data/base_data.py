@@ -77,6 +77,5 @@ class BaseDataModel(BaseModel):  # type: ignore[misc]
     def get_byte_3_6(self) -> int:
         """get_byte_3 ~ 6"""
         protocol_type = self.protocol_type.value << 31
-        print(protocol_type)
         print(self.can_id)
         return protocol_type | self.can_id

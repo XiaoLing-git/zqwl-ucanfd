@@ -10,6 +10,7 @@ from ucan.models.data.base_data import BaseDataModel
 from ucan.models.responses.base_response import DeviceInfoResponse, DeviceSerialResponse
 from ucan.models.responses.can_setup_response import CanSetupResponse
 from ucan.models.responses.system_control_response import SystemControlResponse
+from ucan.serial_number import SerialNumber
 
 if __name__ == '__main__':
     # ser = serial.Serial("COM15", baudrate=6000000, timeout=0.1)
@@ -61,19 +62,22 @@ if __name__ == '__main__':
     # time.sleep(5)
     # device.disconnect()
 
-    data = BaseDataModel(
-        channel=Channel.C0,
-        dlc=8,
-        send_type=DataSendType.normal,
-        filter_frame=FilterFrame.standard,
-        frame_type=FrameType.data,
-        accelerate=Status.on,
-        protocol_type=ProtocolType.Can,
-        can_id=0x55,
-        data="1112131415161718"
-    )
-    print(data.build())
-    print(data)
+    # data = BaseDataModel(
+    #     channel=Channel.C0,
+    #     dlc=8,
+    #     send_type=DataSendType.normal,
+    #     filter_frame=FilterFrame.standard,
+    #     frame_type=FrameType.data,
+    #     accelerate=Status.on,
+    #     protocol_type=ProtocolType.Can,
+    #     can_id=0x55,
+    #     data="1112131415161718"
+    # )
+    # print(data.build())
+    # print(data)
 
+    for i in range(0x556):
+        res = SerialNumber()
+        print(res.value, res.hex)
 
 
